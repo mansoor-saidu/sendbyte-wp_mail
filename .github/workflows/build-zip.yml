@@ -20,7 +20,7 @@ jobs:
         run: |
           mkdir build
           # Copy all files to a directory named after the plugin
-          rsync -av --progress . build/smtp-for-sendbyte --exclude build --exclude .git --exclude .github --exclude README.md --exclude assets/screenshot-\*.png --exclude assets/icon-\*.png --exclude assets/banner-\*.png
+          rsync -av --progress . build/smtp-for-sendbyte --exclude build --exclude .git --exclude .github --exclude .gitignore --exclude README.md --exclude assets/screenshot-\*.png --exclude assets/icon-\*.png --exclude assets/banner-\*.png
           cd build
           zip -r smtp-for-sendbyte.zip smtp-for-sendbyte
 
