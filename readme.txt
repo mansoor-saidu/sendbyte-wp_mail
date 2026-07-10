@@ -1,9 +1,9 @@
-=== SendByte Mail ===
+=== SMTP for SendByte ===
 Contributors: mansoor8080
 Tags: smtp, email, sendbyte, mail, transactional
 Requires at least: 5.5
 Tested up to: 7.0
-Stable tag: 1.1.0
+Stable tag: 1.1.1
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -12,7 +12,7 @@ Send all WordPress emails through SendByte SMTP with logging, test email, sandbo
 
 == Description ==
 
-SendByte Mail hooks into WordPress's built-in PHPMailer to route all outgoing emails through SendByte's SMTP servers (`smtp.sendbyte.africa`). No third-party API keys required — just your SendByte API key and you're set.
+SMTP for SendByte hooks into WordPress's built-in PHPMailer to route all outgoing emails through SendByte's SMTP servers (`smtp.sendbyte.africa`). No third-party API keys required — just your SendByte API key and you're set.
 
 This plugin is **not officially built or maintained by SendByte**. It was created by Mansoor Saidu to provide a simple, reliable SMTP integration for WordPress users who send transactional email through SendByte.
 
@@ -27,9 +27,20 @@ This plugin is **not officially built or maintained by SendByte**. It was create
 * **From name & email** — Customize the sender details that recipients see.
 * **Onboarding flow** — Step-by-step guide when you first activate the plugin.
 
+== External services ==
+
+This plugin relies on SendByte to deliver your emails and fetch delivery statistics.
+
+* **SMTP Sending:** The plugin configures WordPress to send all emails via SendByte's SMTP server at `smtp.sendbyte.africa`. The email content (recipient, sender, subject, and body) is transmitted to this server for delivery.
+* **API Integration:** The plugin connects to the SendByte API at `api.sendbyte.africa` to verify your API key and retrieve your account's sending stats (delivered, bounced, etc.).
+
+This service is provided by SendByte.
+* [Terms of Service](https://sendbyte.africa/terms)
+* [Privacy Policy](https://sendbyte.africa/privacy)
+
 == Installation ==
 
-1. Upload the `sendbyte-mail` folder to `/wp-content/plugins/`, or install via **Plugins > Add New**.
+1. Upload the `smtp-for-sendbyte` folder to `/wp-content/plugins/`, or install via **Plugins > Add New**.
 2. Activate the plugin.
 3. Go to **Settings > SendByte**.
 4. Enter your SendByte API key (get one from your SendByte dashboard).

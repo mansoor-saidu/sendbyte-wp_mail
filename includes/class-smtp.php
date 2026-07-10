@@ -42,7 +42,7 @@ class Smtp {
 				'allow_self_signed' => false,
 			),
 		);
-		$phpmailer->XMailer    = 'SendByte Mail ' . SBWP_VERSION;
+		$phpmailer->XMailer    = 'SMTP for SendByte ' . SBWP_VERSION;
 		$phpmailer->Timeout    = 30;
 	}
 

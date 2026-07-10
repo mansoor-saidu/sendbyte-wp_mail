@@ -1,9 +1,9 @@
 <?php
 /**
- * Plugin Name:       SendByte Mail
+ * Plugin Name:       SMTP for SendByte
  * Plugin URI:        https://sendbyte.africa
  * Description:       Send all WordPress emails through SendByte's SMTP. Includes logging, test email, and sandbox mode.
- * Version:           1.1.0
+ * Version:           1.1.1
  * Requires PHP:      7.4
  * Requires at least: 5.5
  * Requires Plugins:  
@@ -11,13 +11,13 @@
  * Author URI:        https://profiles.wordpress.org/mansoor8080/
  * License:           GPL v2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
- * Text Domain:       sendbyte-mail
+ * Text Domain:       smtp-for-sendbyte
  * Domain Path:       /languages
  */
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SBWP_VERSION', '1.1.0' );
+define( 'SBWP_VERSION', '1.1.1' );
 define( 'SBWP_FILE',    __FILE__ );
 define( 'SBWP_PATH',    plugin_dir_path( __FILE__ ) );
 define( 'SBWP_URL',     plugin_dir_url( __FILE__ ) );
@@ -66,14 +66,14 @@ function sbwp_activation_notice() {
 		return;
 	}
 
-	$url = admin_url( 'options-general.php?page=sendbyte-mail' );
+	$url = admin_url( 'options-general.php?page=smtp-for-sendbyte' );
 	?>
 	<div class="notice notice-info is-dismissible" style="border-left-color:#2563eb">
 		<p>
-			<strong><?php esc_html_e( 'SendByte Mail', 'sendbyte-mail' ); ?></strong> &mdash;
-			<?php esc_html_e( 'Add your API key to start sending emails from WordPress through SendByte.', 'sendbyte-mail' ); ?>
+			<strong><?php esc_html_e( 'SMTP for SendByte', 'smtp-for-sendbyte' ); ?></strong> &mdash;
+			<?php esc_html_e( 'Add your API key to start sending emails from WordPress through SendByte.', 'smtp-for-sendbyte' ); ?>
 			<a href="<?php echo esc_url( $url ); ?>" style="text-decoration:none;font-weight:600;color:#2563eb">
-				<?php esc_html_e( 'Go to Settings', 'sendbyte-mail' ); ?> &rarr;
+				<?php esc_html_e( 'Go to Settings', 'smtp-for-sendbyte' ); ?> &rarr;
 			</a>
 		</p>
 	</div>
@@ -82,10 +82,10 @@ function sbwp_activation_notice() {
 
 add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'sbwp_action_links' );
 function sbwp_action_links( $links ) {
-	$url = admin_url( 'options-general.php?page=sendbyte-mail' );
+	$url = admin_url( 'options-general.php?page=smtp-for-sendbyte' );
 	array_unshift(
 		$links,
-		sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Settings', 'sendbyte-mail' ) )
+		sprintf( '<a href="%s">%s</a>', esc_url( $url ), esc_html__( 'Settings', 'smtp-for-sendbyte' ) )
 	);
 	return $links;
 }

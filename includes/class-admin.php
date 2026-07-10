@@ -6,7 +6,7 @@ defined( 'ABSPATH' ) || exit;
 class Admin {
 
 	private const OPTION_KEY  = 'sendbyte_wp_settings';
-	private const PAGE_SLUG   = 'sendbyte-mail';
+	private const PAGE_SLUG   = 'smtp-for-sendbyte';
 	private const ONBOARD_KEY = 'sbwp_onboard_dismissed';
 
 	public function __construct() {
@@ -20,8 +20,8 @@ class Admin {
 
 	public function add_menu(): void {
 		add_options_page(
-			__( 'SendByte Mail', 'sendbyte-mail' ),
-			__( 'SendByte', 'sendbyte-mail' ),
+			__( 'SMTP for SendByte', 'smtp-for-sendbyte' ),
+			__( 'SendByte', 'smtp-for-sendbyte' ),
 			'manage_options',
 			self::PAGE_SLUG,
 			array( $this, 'render_page' )
@@ -164,11 +164,11 @@ class Admin {
 		add_settings_section( 'sbwp_main', '', '__return_empty_string', self::PAGE_SLUG );
 
 		$fields = array(
-			'api_key'     => __( 'API Key', 'sendbyte-mail' ),
-			'from_email'  => __( 'From Email', 'sendbyte-mail' ),
-			'from_name'   => __( 'From Name', 'sendbyte-mail' ),
-			'sandbox'     => __( 'Sandbox Mode', 'sendbyte-mail' ),
-			'log_enabled' => __( 'Email Logging', 'sendbyte-mail' ),
+			'api_key'     => __( 'API Key', 'smtp-for-sendbyte' ),
+			'from_email'  => __( 'From Email', 'smtp-for-sendbyte' ),
+			'from_name'   => __( 'From Name', 'smtp-for-sendbyte' ),
+			'sandbox'     => __( 'Sandbox Mode', 'smtp-for-sendbyte' ),
+			'log_enabled' => __( 'Email Logging', 'smtp-for-sendbyte' ),
 		);
 
 		foreach ( $fields as $key => $label ) {
@@ -196,7 +196,7 @@ class Admin {
 					esc_attr( $key ),
 					esc_attr( $value )
 				);
-				echo '<p class="sbwp-links"><a href="https://dashboard.sendbyte.africa" target="_blank">' . esc_html__( 'SendByte Dashboard', 'sendbyte-mail' ) . '</a> &middot; <a href="https://dashboard.sendbyte.africa/api-keys" target="_blank">' . esc_html__( 'Get API Key', 'sendbyte-mail' ) . '</a></p>';
+				echo '<p class="sbwp-links"><a href="https://dashboard.sendbyte.africa" target="_blank">' . esc_html__( 'SendByte Dashboard', 'smtp-for-sendbyte' ) . '</a> &middot; <a href="https://dashboard.sendbyte.africa/api-keys" target="_blank">' . esc_html__( 'Get API Key', 'smtp-for-sendbyte' ) . '</a></p>';
 				break;
 
 			case 'from_email':
@@ -206,7 +206,7 @@ class Admin {
 					esc_attr( $key ),
 					esc_attr( $value )
 				);
-				echo '<p class="description">' . esc_html__( 'The "From" address for all outgoing mail. Must use a verified domain with live keys.', 'sendbyte-mail' ) . '</p>';
+				echo '<p class="description">' . esc_html__( 'The "From" address for all outgoing mail. Must use a verified domain with live keys.', 'smtp-for-sendbyte' ) . '</p>';
 				break;
 
 			case 'from_name':
@@ -217,7 +217,7 @@ class Admin {
 					esc_attr( $value ),
 					esc_attr( get_bloginfo( 'name' ) )
 				);
-				echo '<p class="description">' . esc_html__( 'The "From" name recipients see (e.g. "My Website").', 'sendbyte-mail' ) . '</p>';
+				echo '<p class="description">' . esc_html__( 'The "From" name recipients see (e.g. "My Website").', 'smtp-for-sendbyte' ) . '</p>';
 				break;
 
 			case 'sandbox':
@@ -230,10 +230,10 @@ class Admin {
 					</label>
 					<span class="sbwp-mode-badge <?php echo $sandbox ? 'sandbox' : 'live'; ?>">
 						<span class="dashicons dashicons-<?php echo $sandbox ? 'hammer' : 'yes'; ?>"></span>
-						<?php echo $sandbox ? esc_html__( 'Sandbox', 'sendbyte-mail' ) : esc_html__( 'Live', 'sendbyte-mail' ); ?>
+						<?php echo $sandbox ? esc_html__( 'Sandbox', 'smtp-for-sendbyte' ) : esc_html__( 'Live', 'smtp-for-sendbyte' ); ?>
 					</span>
 				</div>
-				<p class="description"><?php esc_html_e( 'Sandbox simulates sending — no real delivery. Toggle off for live mode.', 'sendbyte-mail' ); ?></p>
+				<p class="description"><?php esc_html_e( 'Sandbox simulates sending — no real delivery. Toggle off for live mode.', 'smtp-for-sendbyte' ); ?></p>
 				<?php
 				break;
 
@@ -245,8 +245,8 @@ class Admin {
 					<span>
 					<?php
 					echo $on
-						? esc_html__( 'Logging is ON — sent emails are recorded below', 'sendbyte-mail' )
-						: esc_html__( 'Logging is OFF — no email history is stored', 'sendbyte-mail' );
+						? esc_html__( 'Logging is ON — sent emails are recorded below', 'smtp-for-sendbyte' )
+						: esc_html__( 'Logging is OFF — no email history is stored', 'smtp-for-sendbyte' );
 					?>
 					</span>
 				</label>
@@ -283,13 +283,13 @@ class Admin {
 		<div class="wrap sbwp-wrap">
 			<h1>
 				<img src="<?php echo esc_url( SBWP_URL . 'assets/logo.png' ); ?>" alt="SendByte" width="122" height="40" style="display:block" />
-				<?php echo esc_html__( 'SendByte Mail', 'sendbyte-mail' ); ?>
+				<?php echo esc_html__( 'SMTP for SendByte', 'smtp-for-sendbyte' ); ?>
 			</h1>
 
 			<?php $this->render_onboard(); ?>
 
 			<?php if ( $saved ) : ?>
-				<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Settings saved.', 'sendbyte-mail' ); ?></p></div>
+				<div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'Settings saved.', 'smtp-for-sendbyte' ); ?></p></div>
 			<?php endif; ?>
 
 			<?php $this->render_health(); ?>
@@ -297,34 +297,34 @@ class Admin {
 
 			<form action="options.php" method="post">
 				<div class="sbwp-card">
-					<h2><span class="dashicons dashicons-email"></span> <?php esc_html_e( 'SMTP Configuration', 'sendbyte-mail' ); ?></h2>
+					<h2><span class="dashicons dashicons-email"></span> <?php esc_html_e( 'SMTP Configuration', 'smtp-for-sendbyte' ); ?></h2>
 					<?php
 					settings_fields( self::OPTION_KEY );
 					do_settings_sections( self::PAGE_SLUG );
-					submit_button( __( 'Save Settings', 'sendbyte-mail' ), 'primary', 'submit', true, array( 'style' => 'margin-top:8px' ) );
+					submit_button( __( 'Save Settings', 'smtp-for-sendbyte' ), 'primary', 'submit', true, array( 'style' => 'margin-top:8px' ) );
 					?>
 				</div>
 			</form>
 
 			<div class="sbwp-card">
-				<h2><span class="dashicons dashicons-mail"></span> <?php esc_html_e( 'Send Test Email', 'sendbyte-mail' ); ?></h2>
+				<h2><span class="dashicons dashicons-mail"></span> <?php esc_html_e( 'Send Test Email', 'smtp-for-sendbyte' ); ?></h2>
 				<?php $this->render_test_result(); ?>
 				<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
 					<input type="hidden" name="action" value="sendbyte_test_email" />
 					<?php wp_nonce_field( 'sendbyte_test', '_sbwp_nonce' ); ?>
 					<div class="sbwp-test-row">
 						<input type="email" name="test_to" id="test_to" class="regular-text" required placeholder="you@example.com" />
-						<?php submit_button( __( 'Send Test', 'sendbyte-mail' ), 'secondary', 'send_test', false ); ?>
+						<?php submit_button( __( 'Send Test', 'smtp-for-sendbyte' ), 'secondary', 'send_test', false ); ?>
 					</div>
-					<p class="description" style="margin:4px 0 0"><?php esc_html_e( 'Send a test email to verify your configuration is working.', 'sendbyte-mail' ); ?></p>
+					<p class="description" style="margin:4px 0 0"><?php esc_html_e( 'Send a test email to verify your configuration is working.', 'smtp-for-sendbyte' ); ?></p>
 				</form>
 			</div>
 
 			<div class="sbwp-card">
 				<h2>
 					<span class="dashicons dashicons-list-view"></span>
-					<?php esc_html_e( 'Email Log', 'sendbyte-mail' ); ?>
-					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=' . self::PAGE_SLUG ) ); ?>" class="sbwp-refresh dashicons dashicons-update" title="<?php esc_attr_e( 'Refresh', 'sendbyte-mail' ); ?>"></a>
+					<?php esc_html_e( 'Email Log', 'smtp-for-sendbyte' ); ?>
+					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=' . self::PAGE_SLUG ) ); ?>" class="sbwp-refresh dashicons dashicons-update" title="<?php esc_attr_e( 'Refresh', 'smtp-for-sendbyte' ); ?>"></a>
 				</h2>
 				<?php $this->render_logs(); ?>
 			</div>
@@ -371,29 +371,29 @@ class Admin {
 		<div class="sbwp-card">
 			<h2>
 				<span class="dashicons dashicons-chart-area"></span>
-				<?php esc_html_e( 'Delivery Dashboard', 'sendbyte-mail' ); ?>
+				<?php esc_html_e( 'Delivery Dashboard', 'smtp-for-sendbyte' ); ?>
 				<span class="sbwp-head-right"><?php
 					/* translators: %d: number of recent emails fetched from the API */
-					echo esc_html( sprintf( __( 'Last %d emails', 'sendbyte-mail' ), $total ) );
+					echo esc_html( sprintf( __( 'Last %d emails', 'smtp-for-sendbyte' ), $total ) );
 				?></span>
 			</h2>
 
 			<div class="sbwp-dash-grid">
 				<div class="sbwp-dash-stat delivered">
 					<div class="sbwp-stat-num"><?php echo esc_html( $delivered ); ?></div>
-					<div class="sbwp-stat-label"><?php esc_html_e( 'Delivered', 'sendbyte-mail' ); ?></div>
+					<div class="sbwp-stat-label"><?php esc_html_e( 'Delivered', 'smtp-for-sendbyte' ); ?></div>
 				</div>
 				<div class="sbwp-dash-stat pending">
 					<div class="sbwp-stat-num"><?php echo esc_html( $pending ); ?></div>
-					<div class="sbwp-stat-label"><?php esc_html_e( 'Pending', 'sendbyte-mail' ); ?></div>
+					<div class="sbwp-stat-label"><?php esc_html_e( 'Pending', 'smtp-for-sendbyte' ); ?></div>
 				</div>
 				<div class="sbwp-dash-stat bounced">
 					<div class="sbwp-stat-num"><?php echo esc_html( $bounced ); ?></div>
-					<div class="sbwp-stat-label"><?php esc_html_e( 'Bounced', 'sendbyte-mail' ); ?></div>
+					<div class="sbwp-stat-label"><?php esc_html_e( 'Bounced', 'smtp-for-sendbyte' ); ?></div>
 				</div>
 				<div class="sbwp-dash-stat failed">
 					<div class="sbwp-stat-num"><?php echo esc_html( $failed ); ?></div>
-					<div class="sbwp-stat-label"><?php esc_html_e( 'Failed', 'sendbyte-mail' ); ?></div>
+					<div class="sbwp-stat-label"><?php esc_html_e( 'Failed', 'smtp-for-sendbyte' ); ?></div>
 				</div>
 			</div>
 
@@ -419,11 +419,11 @@ class Admin {
 					</div>
 				<?php endforeach; ?>
 			</div>
-			<p class="description" style="margin:0;font-size:11px;text-align:center"><?php esc_html_e( 'Hourly activity (green = delivered, red = failed/bounced)', 'sendbyte-mail' ); ?></p>
+			<p class="description" style="margin:0;font-size:11px;text-align:center"><?php esc_html_e( 'Hourly activity (green = delivered, red = failed/bounced)', 'smtp-for-sendbyte' ); ?></p>
 			<?php endif; ?>
 
 			<?php if ( ! empty( $recent ) ) : ?>
-			<h3 style="font-size:13px;font-weight:600;margin:16px 0 8px"><?php esc_html_e( 'Recent Activity', 'sendbyte-mail' ); ?></h3>
+			<h3 style="font-size:13px;font-weight:600;margin:16px 0 8px"><?php esc_html_e( 'Recent Activity', 'smtp-for-sendbyte' ); ?></h3>
 			<table class="sbwp-mini-table">
 				<?php foreach ( $recent as $email ) :
 					$s = $email['status'] ?? 'sent';
@@ -450,8 +450,8 @@ class Admin {
 
 		if ( ! $has_key ) {
 			echo '<div class="sbwp-card">';
-			echo '<h2><span class="dashicons dashicons-shield"></span> ' . esc_html__( 'Connection Health', 'sendbyte-mail' ) . '</h2>';
-			echo '<p class="sbwp-empty-state">' . esc_html__( 'Add your API key above to check connection health.', 'sendbyte-mail' ) . '</p>';
+			echo '<h2><span class="dashicons dashicons-shield"></span> ' . esc_html__( 'Connection Health', 'smtp-for-sendbyte' ) . '</h2>';
+			echo '<p class="sbwp-empty-state">' . esc_html__( 'Add your API key above to check connection health.', 'smtp-for-sendbyte' ) . '</p>';
 			echo '</div>';
 			return;
 		}
@@ -461,7 +461,7 @@ class Admin {
 		if ( ! empty( $health['error'] ) && ! $health['valid'] ) {
 			printf(
 				'<div class="sbwp-card"><p class="sbwp-empty-state">%s %s</p></div>',
-				esc_html__( 'Connection failed:', 'sendbyte-mail' ),
+				esc_html__( 'Connection failed:', 'smtp-for-sendbyte' ),
 				esc_html( $health['error'] )
 			);
 			return;
@@ -472,33 +472,33 @@ class Admin {
 		<div class="sbwp-card">
 			<h2>
 				<span class="dashicons dashicons-shield"></span>
-				<?php esc_html_e( 'Connection Health', 'sendbyte-mail' ); ?>
+				<?php esc_html_e( 'Connection Health', 'smtp-for-sendbyte' ); ?>
 				<span class="sbwp-head-right">
-					<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=sbwp_refresh_health' ), 'sbwp_refresh_health' ) ); ?>" class="sbwp-refresh dashicons dashicons-update" title="<?php esc_attr_e( 'Refresh', 'sendbyte-mail' ); ?>"></a>
+					<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=sbwp_refresh_health' ), 'sbwp_refresh_health' ) ); ?>" class="sbwp-refresh dashicons dashicons-update" title="<?php esc_attr_e( 'Refresh', 'smtp-for-sendbyte' ); ?>"></a>
 				</span>
 			</h2>
 
 			<div class="sbwp-health-row">
 				<div class="sbwp-health-item">
-					<div class="sbwp-hl-label"><?php esc_html_e( 'API Key', 'sendbyte-mail' ); ?></div>
+					<div class="sbwp-hl-label"><?php esc_html_e( 'API Key', 'smtp-for-sendbyte' ); ?></div>
 					<div class="sbwp-hl-value">
 						<span class="dashicons dashicons-yes-alt green"></span>
-						<?php esc_html_e( 'Connected', 'sendbyte-mail' ); ?>
+						<?php esc_html_e( 'Connected', 'smtp-for-sendbyte' ); ?>
 					</div>
 				</div>
 				<div class="sbwp-health-item">
-					<div class="sbwp-hl-label"><?php esc_html_e( 'Mode', 'sendbyte-mail' ); ?></div>
+					<div class="sbwp-hl-label"><?php esc_html_e( 'Mode', 'smtp-for-sendbyte' ); ?></div>
 					<div class="sbwp-hl-value">
 						<span class="dashicons dashicons-<?php echo 'sandbox' === $health['mode'] ? 'hammer' : 'yes'; ?> <?php echo 'sandbox' === $health['mode'] ? 'amber' : 'green'; ?>"></span>
-						<?php echo 'sandbox' === $health['mode'] ? esc_html__( 'Sandbox', 'sendbyte-mail' ) : esc_html__( 'Live', 'sendbyte-mail' ); ?>
+						<?php echo 'sandbox' === $health['mode'] ? esc_html__( 'Sandbox', 'smtp-for-sendbyte' ) : esc_html__( 'Live', 'smtp-for-sendbyte' ); ?>
 					</div>
 				</div>
 				<div class="sbwp-health-item">
-					<div class="sbwp-hl-label"><?php esc_html_e( 'Plan', 'sendbyte-mail' ); ?></div>
+					<div class="sbwp-hl-label"><?php esc_html_e( 'Plan', 'smtp-for-sendbyte' ); ?></div>
 					<div class="sbwp-hl-value"><?php echo esc_html( $health['plan'] ?: '—' ); ?></div>
 				</div>
 				<div class="sbwp-health-item">
-					<div class="sbwp-hl-label"><?php esc_html_e( 'Verified Domains', 'sendbyte-mail' ); ?></div>
+					<div class="sbwp-hl-label"><?php esc_html_e( 'Verified Domains', 'smtp-for-sendbyte' ); ?></div>
 					<div class="sbwp-hl-value">
 						<?php
 						$verified = array();
@@ -512,7 +512,7 @@ class Admin {
 						} else {
 							$has_domains = ! empty( $health['domains'] );
 							if ( $has_domains ) {
-								esc_html_e( 'None verified', 'sendbyte-mail' );
+								esc_html_e( 'None verified', 'smtp-for-sendbyte' );
 							} else {
 								echo '—';
 							}
@@ -524,13 +524,13 @@ class Admin {
 
 			<?php if ( $health['quota'] > 0 ) : ?>
 			<div style="margin-top:16px">
-				<div class="sbwp-hl-label"><?php esc_html_e( 'Monthly Usage', 'sendbyte-mail' ); ?></div>
+				<div class="sbwp-hl-label"><?php esc_html_e( 'Monthly Usage', 'smtp-for-sendbyte' ); ?></div>
 				<div class="sbwp-quota-bar"><span style="width:<?php echo esc_attr( $pct ); ?>%"></span></div>
 				<div class="sbwp-quota-text">
 					<?php
 					printf(
 						/* translators: 1: number used, 2: total quota */
-						esc_html__( '%1$s of %2$s emails used', 'sendbyte-mail' ),
+						esc_html__( '%1$s of %2$s emails used', 'smtp-for-sendbyte' ),
 						esc_html( number_format_i18n( $health['used'] ) ),
 						esc_html( number_format_i18n( $health['quota'] ) )
 					);
@@ -557,26 +557,26 @@ class Admin {
 
 		$steps = array(
 			array(
-				'label' => __( 'Add API Key', 'sendbyte-mail' ),
+				'label' => __( 'Add API Key', 'smtp-for-sendbyte' ),
 				'done'  => $has_key,
 			),
 			array(
-				'label' => __( 'Set From Address', 'sendbyte-mail' ),
+				'label' => __( 'Set From Address', 'smtp-for-sendbyte' ),
 				'done'  => $has_from,
 			),
 			array(
-				'label' => __( 'Send Test Email', 'sendbyte-mail' ),
+				'label' => __( 'Send Test Email', 'smtp-for-sendbyte' ),
 				'done'  => false,
 			),
 		);
 
-		$title = $has_key ? __( 'Finish setting up', 'sendbyte-mail' ) : __( 'Welcome to SendByte Mail', 'sendbyte-mail' );
+		$title = $has_key ? __( 'Finish setting up', 'smtp-for-sendbyte' ) : __( 'Welcome to SMTP for SendByte', 'smtp-for-sendbyte' );
 		$desc  = $has_key
-			? __( 'Almost there! Set your from address and send a test to start.', 'sendbyte-mail' )
-			: __( 'Add your API key to start sending emails from WordPress through SendByte.', 'sendbyte-mail' );
+			? __( 'Almost there! Set your from address and send a test to start.', 'smtp-for-sendbyte' )
+			: __( 'Add your API key to start sending emails from WordPress through SendByte.', 'smtp-for-sendbyte' );
 		?>
 		<div class="sbwp-onboard">
-			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=sbwp_dismiss_onboard' ), 'sbwp_dismiss' ) ); ?>" class="sbwp-dismiss dashicons dashicons-no-alt" title="<?php esc_attr_e( 'Dismiss', 'sendbyte-mail' ); ?>"></a>
+			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=sbwp_dismiss_onboard' ), 'sbwp_dismiss' ) ); ?>" class="sbwp-dismiss dashicons dashicons-no-alt" title="<?php esc_attr_e( 'Dismiss', 'smtp-for-sendbyte' ); ?>"></a>
 			<h3><?php echo esc_html( $title ); ?></h3>
 			<p><?php echo esc_html( $desc ); ?></p>
 			<ul class="sbwp-steps">
@@ -604,9 +604,9 @@ class Admin {
 		$type = sanitize_key( wp_unslash( $_GET['sbwp_test'] ) );
 
 		if ( 'success' === $type ) {
-			echo '<div class="sbwp-test-result success">' . esc_html__( 'Test email sent successfully! Check the recipient inbox.', 'sendbyte-mail' ) . '</div>';
+			echo '<div class="sbwp-test-result success">' . esc_html__( 'Test email sent successfully! Check the recipient inbox.', 'smtp-for-sendbyte' ) . '</div>';
 		} else {
-			echo '<div class="sbwp-test-result fail">' . esc_html__( 'Test email failed. Check your API key and domain settings.', 'sendbyte-mail' ) . '</div>';
+			echo '<div class="sbwp-test-result fail">' . esc_html__( 'Test email failed. Check your API key and domain settings.', 'smtp-for-sendbyte' ) . '</div>';
 		}
 	}
 
@@ -614,22 +614,22 @@ class Admin {
 		$options = get_option( self::OPTION_KEY, array() );
 
 		if ( empty( $options['log_enabled'] ) ) {
-			echo '<p class="sbwp-empty-state">' . esc_html__( 'Logging is disabled. Enable "Email Logging" above to start recording sent emails.', 'sendbyte-mail' ) . '</p>';
+			echo '<p class="sbwp-empty-state">' . esc_html__( 'Logging is disabled. Enable "Email Logging" above to start recording sent emails.', 'smtp-for-sendbyte' ) . '</p>';
 			return;
 		}
 
 		$logs = Logger::get_recent( 25 );
 
 		if ( empty( $logs ) ) {
-			echo '<p class="sbwp-empty-state">' . esc_html__( 'No emails logged yet. Send a test email above to see results here.', 'sendbyte-mail' ) . '</p>';
+			echo '<p class="sbwp-empty-state">' . esc_html__( 'No emails logged yet. Send a test email above to see results here.', 'smtp-for-sendbyte' ) . '</p>';
 			return;
 		}
 
 		echo '<table class="sbwp-log-table"><thead><tr>';
-		echo '<th>' . esc_html__( 'Date', 'sendbyte-mail' ) . '</th>';
-		echo '<th>' . esc_html__( 'To', 'sendbyte-mail' ) . '</th>';
-		echo '<th>' . esc_html__( 'Subject', 'sendbyte-mail' ) . '</th>';
-		echo '<th>' . esc_html__( 'Status', 'sendbyte-mail' ) . '</th>';
+		echo '<th>' . esc_html__( 'Date', 'smtp-for-sendbyte' ) . '</th>';
+		echo '<th>' . esc_html__( 'To', 'smtp-for-sendbyte' ) . '</th>';
+		echo '<th>' . esc_html__( 'Subject', 'smtp-for-sendbyte' ) . '</th>';
+		echo '<th>' . esc_html__( 'Status', 'smtp-for-sendbyte' ) . '</th>';
 		echo '</tr></thead><tbody>';
 
 		foreach ( $logs as $log ) {
@@ -638,13 +638,13 @@ class Admin {
 
 			switch ( $log->status ) {
 				case 'delivered':
-					$label = __( 'Delivered', 'sendbyte-mail' );
+					$label = __( 'Delivered', 'smtp-for-sendbyte' );
 					break;
 				case 'failed':
-					$label = __( 'Failed', 'sendbyte-mail' );
+					$label = __( 'Failed', 'smtp-for-sendbyte' );
 					break;
 				default:
-					$label = __( 'Sent', 'sendbyte-mail' );
+					$label = __( 'Sent', 'smtp-for-sendbyte' );
 					break;
 			}
 
@@ -663,23 +663,23 @@ class Admin {
 
 	public function handle_test_email(): void {
 		if ( ! isset( $_POST['_sbwp_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['_sbwp_nonce'] ) ), 'sendbyte_test' ) || ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Unauthorized.', 'sendbyte-mail' ) );
+			wp_die( esc_html__( 'Unauthorized.', 'smtp-for-sendbyte' ) );
 		}
 
 		$to = isset( $_POST['test_to'] ) ? sanitize_email( wp_unslash( $_POST['test_to'] ) ) : '';
 		if ( ! is_email( $to ) ) {
-			wp_die( esc_html__( 'Invalid email address.', 'sendbyte-mail' ) );
+			wp_die( esc_html__( 'Invalid email address.', 'smtp-for-sendbyte' ) );
 		}
 
 		$subject = sprintf(
 			/* translators: %s: current date/time */
-			__( 'SendByte Test Email — %s', 'sendbyte-mail' ),
+			__( 'SendByte Test Email — %s', 'smtp-for-sendbyte' ),
 			wp_date( 'Y-m-d H:i:s' )
 		);
 
 		$message = sprintf(
 			/* translators: 1: site URL, 2: current date/time */
-			__( "This is a test email sent from %1\$s via SendByte.\n\nSent at: %2\$s", 'sendbyte-mail' ),
+			__( "This is a test email sent from %1\$s via SendByte.\n\nSent at: %2\$s", 'smtp-for-sendbyte' ),
 			home_url(),
 			wp_date( 'Y-m-d H:i:s' )
 		);
@@ -700,7 +700,7 @@ class Admin {
 
 	public function dismiss_onboard(): void {
 		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), 'sbwp_dismiss' ) || ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Unauthorized.', 'sendbyte-mail' ) );
+			wp_die( esc_html__( 'Unauthorized.', 'smtp-for-sendbyte' ) );
 		}
 
 		update_user_meta( get_current_user_id(), self::ONBOARD_KEY, 1 );
@@ -710,7 +710,7 @@ class Admin {
 
 	public function refresh_health(): void {
 		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), 'sbwp_refresh_health' ) || ! current_user_can( 'manage_options' ) ) {
-			wp_die( esc_html__( 'Unauthorized.', 'sendbyte-mail' ) );
+			wp_die( esc_html__( 'Unauthorized.', 'smtp-for-sendbyte' ) );
 		}
 
 		$options = get_option( self::OPTION_KEY, array() );

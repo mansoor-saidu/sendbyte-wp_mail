@@ -1,4 +1,4 @@
-# SendByte Mail
+# SMTP for SendByte
 
 Send all WordPress emails through SendByte SMTP with logging, test email, sandbox mode, delivery dashboard, and connection health check.
 
@@ -15,9 +15,20 @@ This plugin hooks into WordPress's built-in PHPMailer to route all outgoing emai
 * **From name & email** — Customize the sender details that recipients see.
 * **Onboarding flow** — Step-by-step guide when you first activate the plugin.
 
+## External Services
+
+This plugin relies on SendByte to deliver your emails and fetch delivery statistics.
+
+* **SMTP Sending:** The plugin configures WordPress to send all emails via SendByte's SMTP server at `smtp.sendbyte.africa`. The email content (recipient, sender, subject, and body) is transmitted to this server for delivery.
+* **API Integration:** The plugin connects to the SendByte API at `api.sendbyte.africa` to verify your API key and retrieve your account's sending stats (delivered, bounced, etc.).
+
+This service is provided by SendByte.
+* [Terms of Service](https://sendbyte.africa/terms)
+* [Privacy Policy](https://sendbyte.africa/privacy)
+
 ## Installation
 
-1. Upload the `sendbyte-mail` folder to `/wp-content/plugins/`, or install via **Plugins > Add New** using the provided release zip.
+1. Upload the `smtp-for-sendbyte` folder to `/wp-content/plugins/`, or install via **Plugins > Add New** using the provided release zip.
 2. Activate the plugin.
 3. Go to **Settings > SendByte**.
 4. Enter your SendByte API key (get one from your SendByte dashboard).
