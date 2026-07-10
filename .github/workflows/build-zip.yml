@@ -1,0 +1,37 @@
+name: Build and Release Zip
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'v*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Build Zip Bundle
+        run: |
+          mkdir build
+          # Copy all files to a directory named after the plugin
+          rsync -av --progress . build/sendbyte-mail --exclude build --exclude .git --exclude .github --exclude README.md
+          cd build
+          zip -r sendbyte-mail.zip sendbyte-mail
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: sendbyte-mail-plugin
+          path: build/sendbyte-mail.zip
+
+      - name: Create Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v1
+        with:
+          files: build/sendbyte-mail.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
