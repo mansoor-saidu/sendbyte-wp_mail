@@ -1,4 +1,4 @@
-# SMTP for SendByte
+# Mansoor SMTP for SendByte
 
 Send all WordPress emails through SendByte SMTP with logging, test email, sandbox mode, delivery dashboard, and connection health check.
 
@@ -28,7 +28,7 @@ This service is provided by SendByte.
 
 ## Installation
 
-1. Upload the `smtp-for-sendbyte` folder to `/wp-content/plugins/`, or install via **Plugins > Add New** using the provided release zip.
+1. Upload the `mansoor-smtp-for-sendbyte` folder to `/wp-content/plugins/`, or install via **Plugins > Add New** using the provided release zip.
 2. Activate the plugin.
 3. Go to **Settings > SendByte**.
 4. Enter your SendByte API key (get one from your SendByte dashboard).

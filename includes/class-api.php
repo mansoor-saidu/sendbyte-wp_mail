@@ -36,7 +36,7 @@ class Api {
 			$body = json_decode( wp_remote_retrieve_body( $email_resp ), true );
 			$result['error'] = $body['message'] ?? sprintf(
 				/* translators: %d: HTTP response code */
-				__( 'API returned HTTP %d', 'smtp-for-sendbyte' ),
+				__( 'API returned HTTP %d', 'mansoor-smtp-for-sendbyte' ),
 				$code
 			);
 			set_transient( $cache_key, $result, 60 );
