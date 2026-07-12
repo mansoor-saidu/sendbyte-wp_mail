@@ -3,7 +3,7 @@ Contributors: mansoor8080
 Tags: smtp, email, sendbyte, mail, transactional
 Requires at least: 5.5
 Tested up to: 7.0
-Stable tag: 1.1.2
+Stable tag: 1.1.3
 Requires PHP: 7.4
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
@@ -74,6 +74,10 @@ The API key is stored in your WordPress options table. It is sent only to SendBy
 It uses WordPress's built-in PHPMailer configured to send via SMTP through smtp.sendbyte.africa:587 with STARTTLS.
 
 == Changelog ==
+
+= 1.1.3 =
+* Renamed plugin to Mansoor SMTP for SendByte to comply with WordPress.org guidelines.
+
 
 = 1.1.0 =
 * Added delivery dashboard with real-time stats from SendByte API.
