@@ -3,7 +3,7 @@
  * Plugin Name:       Mansoor SMTP for SendByte
  * Plugin URI:        https://sendbyte.africa
  * Description:       Send all WordPress emails through SendByte's SMTP. Includes logging, test email, and sandbox mode.
- * Version:           1.1.3
+ * Version:           1.1.4
  * Requires PHP:      7.4
  * Requires at least: 5.5
  * Requires Plugins:  
@@ -17,7 +17,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'MANSMTP_VERSION', '1.1.3' );
+define( 'MANSMTP_VERSION', '1.1.4' );
 define( 'MANSMTP_FILE',    __FILE__ );
 define( 'MANSMTP_PATH',    plugin_dir_path( __FILE__ ) );
 define( 'MANSMTP_URL',     plugin_dir_url( __FILE__ ) );
