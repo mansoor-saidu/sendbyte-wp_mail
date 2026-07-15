@@ -1,5 +1,5 @@
 <?php
-namespace SBWP;
+namespace MANSMTP;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -8,7 +8,7 @@ class Api {
 	private const BASE = 'https://api.sendbyte.africa';
 
 	public static function health_check( string $api_key ): array {
-		$cache_key = 'sbwp_health_' . md5( $api_key );
+		$cache_key = 'mansmtp_health_' . md5( $api_key );
 		$cached    = get_transient( $cache_key );
 		if ( false !== $cached ) {
 			return $cached;
@@ -67,7 +67,7 @@ class Api {
 	}
 
 	public static function get_email_stats( string $api_key, int $limit = 100 ): array {
-		$cache_key = 'sbwp_stats_' . md5( $api_key . $limit );
+		$cache_key = 'mansmtp_stats_' . md5( $api_key . $limit );
 		$cached    = get_transient( $cache_key );
 		if ( false !== $cached ) {
 			return $cached;
@@ -140,8 +140,8 @@ class Api {
 		$wpdb->query( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
 			$wpdb->prepare(
 				"DELETE FROM {$wpdb->options} WHERE option_name LIKE %s OR option_name LIKE %s",
-				$wpdb->esc_like( '_transient_sbwp_health_' ) . '%',
-				$wpdb->esc_like( '_transient_sbwp_stats_' ) . '%'
+				$wpdb->esc_like( '_transient_mansmtp_health_' ) . '%',
+				$wpdb->esc_like( '_transient_mansmtp_stats_' ) . '%'
 			)
 		);
 	}

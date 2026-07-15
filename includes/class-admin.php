@@ -1,20 +1,20 @@
 <?php
-namespace SBWP;
+namespace MANSMTP;
 
 defined( 'ABSPATH' ) || exit;
 
 class Admin {
 
-	private const OPTION_KEY  = 'sendbyte_wp_settings';
+	private const OPTION_KEY  = 'mansmtp_settings';
 	private const PAGE_SLUG   = 'mansoor-smtp-for-sendbyte';
-	private const ONBOARD_KEY = 'sbwp_onboard_dismissed';
+	private const ONBOARD_KEY = 'mansmtp_onboard_dismissed';
 
 	public function __construct() {
 		add_action( 'admin_menu',                     array( $this, 'add_menu' ) );
 		add_action( 'admin_init',                     array( $this, 'register_settings' ) );
 		add_action( 'admin_post_sendbyte_test_email',  array( $this, 'handle_test_email' ) );
-		add_action( 'admin_post_sbwp_dismiss_onboard', array( $this, 'dismiss_onboard' ) );
-		add_action( 'admin_post_sbwp_refresh_health',  array( $this, 'refresh_health' ) );
+		add_action( 'admin_post_mansmtp_dismiss_onboard', array( $this, 'dismiss_onboard' ) );
+		add_action( 'admin_post_mansmtp_refresh_health',  array( $this, 'refresh_health' ) );
 		add_action( 'admin_enqueue_scripts',          array( $this, 'enqueue_assets' ) );
 	}
 
@@ -33,113 +33,113 @@ class Admin {
 			return;
 		}
 
-		delete_transient( 'sbwp_activation_notice' );
+		delete_transient( 'mansmtp_activation_notice' );
 
 		wp_enqueue_style(
-			'sbwp-font',
-			SBWP_URL . 'assets/fonts.css',
+			'mansmtp-font',
+			MANSMTP_URL . 'assets/fonts.css',
 			array(),
-			SBWP_VERSION
+			MANSMTP_VERSION
 		);
 
 		$css = '
-		.sbwp-wrap { max-width: 880px; font-family:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
-		.sbwp-wrap h1 { display:flex; align-items:center; gap:10px; margin-bottom:24px; }
-		.sbwp-card { background:#fff; border:1px solid #e2e4e7; border-radius:8px; padding:24px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,.04); }
-		.sbwp-card h2 { margin-top:0; margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid #f0f0f1; font-size:16px; font-weight:600; display:flex; align-items:center; gap:8px; }
-		.sbwp-card h2 .dashicons { width:20px; height:20px; font-size:20px; }
-		.sbwp-card h2 .sbwp-head-right { margin-left:auto; font-size:12px; font-weight:400; color:#787c82; display:flex; align-items:center; gap:8px; }
-		.sbwp-card h2 .sbwp-head-right a { text-decoration:none; }
-		.sbwp-card .form-table { margin:0; }
-		.sbwp-card .form-table th { width:180px; padding:15px 10px 15px 0; }
-		.sbwp-card .form-table td { padding:15px 0; }
-		.sbwp-card .form-table input.regular-text { width:100%; max-width:400px; }
-		.sbwp-card .form-table p.description { margin:8px 0 0; font-size:12px; color:#787c82; }
-		.sbwp-card .sbwp-links { margin:4px 0 0; font-size:12px; }
-		.sbwp-card .sbwp-links a { text-decoration:none; }
-		.sbwp-card .sbwp-links a:hover { text-decoration:underline; }
-		.sbwp-status-badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:500; }
-		.sbwp-status-badge.delivered { background:#e6f9e8; color:#1a7d2a; }
-		.sbwp-status-badge.failed, .sbwp-status-badge.bounced { background:#fce8e8; color:#b32d2e; }
-		.sbwp-status-badge.sent, .sbwp-status-badge.queued { background:#e8f0fe; color:#1967d2; }
-		.sbwp-test-result { margin:16px 0 0; padding:12px 16px; border-radius:6px; font-size:13px; }
-		.sbwp-test-result.success { background:#e6f9e8; border:1px solid #b7e4c0; color:#1a7d2a; }
-		.sbwp-test-result.fail { background:#fce8e8; border:1px solid #f5bdbd; color:#b32d2e; }
-		.sbwp-test-row { display:flex; gap:8px; align-items:center; }
-		.sbwp-test-row input[type="email"] { flex:1; max-width:320px; }
-		.sbwp-log-table { width:100%; border-collapse:collapse; margin-top:4px; }
-		.sbwp-log-table th { text-align:left; padding:10px 12px; border-bottom:2px solid #f0f0f1; font-size:12px; font-weight:600; color:#50575e; text-transform:uppercase; letter-spacing:.5px; }
-		.sbwp-log-table td { padding:10px 12px; border-bottom:1px solid #f0f0f1; font-size:13px; }
-		.sbwp-log-table tr:hover td { background:#fafafa; }
-		.sbwp-log-table .sbwp-to { max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-		.sbwp-log-table .sbwp-subj { max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#50575e; }
-		.sbwp-log-table .sbwp-date { color:#787c82; font-size:12px; white-space:nowrap; }
-		.sbwp-empty-state { text-align:center; padding:32px 0; color:#787c82; font-size:13px; }
-		.sbwp-refresh { text-decoration:none; font-size:13px; display:inline-flex; align-items:center; gap:4px; }
-		.sbwp-mode-switch { display:flex; align-items:center; gap:12px; }
-		.sbwp-mode-switch .sbwp-toggle { position:relative; width:48px; height:26px; flex-shrink:0; }
-		.sbwp-mode-switch .sbwp-toggle input { position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer; z-index:2; }
-		.sbwp-mode-switch .sbwp-toggle .sbwp-slider { position:absolute; inset:0; background:#e5e7eb; border-radius:13px; transition:background .2s; }
-		.sbwp-mode-switch .sbwp-toggle .sbwp-slider::after { content:""; position:absolute; top:3px; left:3px; width:20px; height:20px; background:#fff; border-radius:50%; transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,.15); }
-		.sbwp-mode-switch .sbwp-toggle input:checked + .sbwp-slider { background:#2563eb; }
-		.sbwp-mode-switch .sbwp-toggle input:checked + .sbwp-slider::after { transform:translateX(22px); }
-		.sbwp-mode-switch .sbwp-mode-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 12px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; }
-		.sbwp-mode-switch .sbwp-mode-badge.sandbox { background:#fef3c7; color:#b45309; }
-		.sbwp-mode-switch .sbwp-mode-badge.live { background:#e6f9e8; color:#1a7d2a; }
-		.sbwp-mode-switch .sbwp-mode-badge .dashicons { width:14px; height:14px; font-size:14px; }
-		.sbwp-toggle-label { display:flex; align-items:center; gap:8px; cursor:pointer; }
-		.sbwp-toggle-label input[type="checkbox"] { margin:0; }
-		.sbwp-onboard { background:#f8faff; border:1px solid #dbe7fe; border-radius:8px; padding:20px 24px; margin-bottom:24px; position:relative; }
-		.sbwp-onboard h3 { margin:0 0 4px; font-size:15px; font-weight:600; color:#1e40af; }
-		.sbwp-onboard p { margin:0 0 16px; font-size:13px; color:#4b5563; }
-		.sbwp-onboard .sbwp-steps { display:flex; gap:0; list-style:none; margin:0; padding:0; }
-		.sbwp-onboard .sbwp-steps li { flex:1; display:flex; align-items:center; gap:8px; padding:10px 12px; font-size:12px; color:#6b7280; border-right:1px solid #e5e7eb; }
-		.sbwp-onboard .sbwp-steps li:last-child { border-right:0; }
-		.sbwp-onboard .sbwp-steps .sbwp-step-num { display:flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; font-size:11px; font-weight:700; flex-shrink:0; background:#e5e7eb; color:#6b7280; }
-		.sbwp-onboard .sbwp-steps .sbwp-step-num.done { background:#2563eb; color:#fff; }
-		.sbwp-onboard .sbwp-steps .sbwp-step-label { font-weight:500; }
-		.sbwp-onboard .sbwp-dismiss { position:absolute; top:16px; right:16px; text-decoration:none; color:#9ca3af; font-size:16px; line-height:1; }
-		.sbwp-onboard .sbwp-dismiss:hover { color:#4b5563; }
+		.mansmtp-wrap { max-width: 880px; font-family:"Hanken Grotesk",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+		.mansmtp-wrap h1 { display:flex; align-items:center; gap:10px; margin-bottom:24px; }
+		.mansmtp-card { background:#fff; border:1px solid #e2e4e7; border-radius:8px; padding:24px; margin-bottom:24px; box-shadow:0 1px 3px rgba(0,0,0,.04); }
+		.mansmtp-card h2 { margin-top:0; margin-bottom:20px; padding-bottom:12px; border-bottom:1px solid #f0f0f1; font-size:16px; font-weight:600; display:flex; align-items:center; gap:8px; }
+		.mansmtp-card h2 .dashicons { width:20px; height:20px; font-size:20px; }
+		.mansmtp-card h2 .mansmtp-head-right { margin-left:auto; font-size:12px; font-weight:400; color:#787c82; display:flex; align-items:center; gap:8px; }
+		.mansmtp-card h2 .mansmtp-head-right a { text-decoration:none; }
+		.mansmtp-card .form-table { margin:0; }
+		.mansmtp-card .form-table th { width:180px; padding:15px 10px 15px 0; }
+		.mansmtp-card .form-table td { padding:15px 0; }
+		.mansmtp-card .form-table input.regular-text { width:100%; max-width:400px; }
+		.mansmtp-card .form-table p.description { margin:8px 0 0; font-size:12px; color:#787c82; }
+		.mansmtp-card .mansmtp-links { margin:4px 0 0; font-size:12px; }
+		.mansmtp-card .mansmtp-links a { text-decoration:none; }
+		.mansmtp-card .mansmtp-links a:hover { text-decoration:underline; }
+		.mansmtp-status-badge { display:inline-flex; align-items:center; gap:4px; padding:3px 10px; border-radius:20px; font-size:12px; font-weight:500; }
+		.mansmtp-status-badge.delivered { background:#e6f9e8; color:#1a7d2a; }
+		.mansmtp-status-badge.failed, .mansmtp-status-badge.bounced { background:#fce8e8; color:#b32d2e; }
+		.mansmtp-status-badge.sent, .mansmtp-status-badge.queued { background:#e8f0fe; color:#1967d2; }
+		.mansmtp-test-result { margin:16px 0 0; padding:12px 16px; border-radius:6px; font-size:13px; }
+		.mansmtp-test-result.success { background:#e6f9e8; border:1px solid #b7e4c0; color:#1a7d2a; }
+		.mansmtp-test-result.fail { background:#fce8e8; border:1px solid #f5bdbd; color:#b32d2e; }
+		.mansmtp-test-row { display:flex; gap:8px; align-items:center; }
+		.mansmtp-test-row input[type="email"] { flex:1; max-width:320px; }
+		.mansmtp-log-table { width:100%; border-collapse:collapse; margin-top:4px; }
+		.mansmtp-log-table th { text-align:left; padding:10px 12px; border-bottom:2px solid #f0f0f1; font-size:12px; font-weight:600; color:#50575e; text-transform:uppercase; letter-spacing:.5px; }
+		.mansmtp-log-table td { padding:10px 12px; border-bottom:1px solid #f0f0f1; font-size:13px; }
+		.mansmtp-log-table tr:hover td { background:#fafafa; }
+		.mansmtp-log-table .mansmtp-to { max-width:200px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+		.mansmtp-log-table .mansmtp-subj { max-width:240px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#50575e; }
+		.mansmtp-log-table .mansmtp-date { color:#787c82; font-size:12px; white-space:nowrap; }
+		.mansmtp-empty-state { text-align:center; padding:32px 0; color:#787c82; font-size:13px; }
+		.mansmtp-refresh { text-decoration:none; font-size:13px; display:inline-flex; align-items:center; gap:4px; }
+		.mansmtp-mode-switch { display:flex; align-items:center; gap:12px; }
+		.mansmtp-mode-switch .mansmtp-toggle { position:relative; width:48px; height:26px; flex-shrink:0; }
+		.mansmtp-mode-switch .mansmtp-toggle input { position:absolute; opacity:0; width:100%; height:100%; margin:0; cursor:pointer; z-index:2; }
+		.mansmtp-mode-switch .mansmtp-toggle .mansmtp-slider { position:absolute; inset:0; background:#e5e7eb; border-radius:13px; transition:background .2s; }
+		.mansmtp-mode-switch .mansmtp-toggle .mansmtp-slider::after { content:""; position:absolute; top:3px; left:3px; width:20px; height:20px; background:#fff; border-radius:50%; transition:transform .2s; box-shadow:0 1px 3px rgba(0,0,0,.15); }
+		.mansmtp-mode-switch .mansmtp-toggle input:checked + .mansmtp-slider { background:#2563eb; }
+		.mansmtp-mode-switch .mansmtp-toggle input:checked + .mansmtp-slider::after { transform:translateX(22px); }
+		.mansmtp-mode-switch .mansmtp-mode-badge { display:inline-flex; align-items:center; gap:5px; padding:3px 12px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:.8px; text-transform:uppercase; }
+		.mansmtp-mode-switch .mansmtp-mode-badge.sandbox { background:#fef3c7; color:#b45309; }
+		.mansmtp-mode-switch .mansmtp-mode-badge.live { background:#e6f9e8; color:#1a7d2a; }
+		.mansmtp-mode-switch .mansmtp-mode-badge .dashicons { width:14px; height:14px; font-size:14px; }
+		.mansmtp-toggle-label { display:flex; align-items:center; gap:8px; cursor:pointer; }
+		.mansmtp-toggle-label input[type="checkbox"] { margin:0; }
+		.mansmtp-onboard { background:#f8faff; border:1px solid #dbe7fe; border-radius:8px; padding:20px 24px; margin-bottom:24px; position:relative; }
+		.mansmtp-onboard h3 { margin:0 0 4px; font-size:15px; font-weight:600; color:#1e40af; }
+		.mansmtp-onboard p { margin:0 0 16px; font-size:13px; color:#4b5563; }
+		.mansmtp-onboard .mansmtp-steps { display:flex; gap:0; list-style:none; margin:0; padding:0; }
+		.mansmtp-onboard .mansmtp-steps li { flex:1; display:flex; align-items:center; gap:8px; padding:10px 12px; font-size:12px; color:#6b7280; border-right:1px solid #e5e7eb; }
+		.mansmtp-onboard .mansmtp-steps li:last-child { border-right:0; }
+		.mansmtp-onboard .mansmtp-steps .mansmtp-step-num { display:flex; align-items:center; justify-content:center; width:22px; height:22px; border-radius:50%; font-size:11px; font-weight:700; flex-shrink:0; background:#e5e7eb; color:#6b7280; }
+		.mansmtp-onboard .mansmtp-steps .mansmtp-step-num.done { background:#2563eb; color:#fff; }
+		.mansmtp-onboard .mansmtp-steps .mansmtp-step-label { font-weight:500; }
+		.mansmtp-onboard .mansmtp-dismiss { position:absolute; top:16px; right:16px; text-decoration:none; color:#9ca3af; font-size:16px; line-height:1; }
+		.mansmtp-onboard .mansmtp-dismiss:hover { color:#4b5563; }
 
-		.sbwp-dash-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:8px; }
-		.sbwp-dash-stat { text-align:center; padding:16px; border-radius:6px; background:#f9fafb; }
-		.sbwp-dash-stat .sbwp-stat-num { font-size:28px; font-weight:700; line-height:1.2; }
-		.sbwp-dash-stat .sbwp-stat-label { font-size:11px; color:#787c82; text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
-		.sbwp-dash-stat.delivered .sbwp-stat-num { color:#1a7d2a; }
-		.sbwp-dash-stat.failed .sbwp-stat-num { color:#b32d2e; }
-		.sbwp-dash-stat.pending .sbwp-stat-num { color:#1967d2; }
-		.sbwp-dash-stat.bounced .sbwp-stat-num { color:#b45309; }
-		.sbwp-dash-bar { height:6px; border-radius:3px; background:#f0f0f1; margin:12px 0; overflow:hidden; display:flex; }
-		.sbwp-dash-bar span { height:100%; transition:width .4s; }
-		.sbwp-dash-bar .bar-delivered { background:#1a7d2a; }
-		.sbwp-dash-bar .bar-pending { background:#1967d2; }
-		.sbwp-dash-bar .bar-failed { background:#b32d2e; }
-		.sbwp-dash-bar .bar-bounced { background:#b45309; }
+		.mansmtp-dash-grid { display:grid; grid-template-columns:1fr 1fr; gap:16px; margin-bottom:8px; }
+		.mansmtp-dash-stat { text-align:center; padding:16px; border-radius:6px; background:#f9fafb; }
+		.mansmtp-dash-stat .mansmtp-stat-num { font-size:28px; font-weight:700; line-height:1.2; }
+		.mansmtp-dash-stat .mansmtp-stat-label { font-size:11px; color:#787c82; text-transform:uppercase; letter-spacing:.5px; margin-top:2px; }
+		.mansmtp-dash-stat.delivered .mansmtp-stat-num { color:#1a7d2a; }
+		.mansmtp-dash-stat.failed .mansmtp-stat-num { color:#b32d2e; }
+		.mansmtp-dash-stat.pending .mansmtp-stat-num { color:#1967d2; }
+		.mansmtp-dash-stat.bounced .mansmtp-stat-num { color:#b45309; }
+		.mansmtp-dash-bar { height:6px; border-radius:3px; background:#f0f0f1; margin:12px 0; overflow:hidden; display:flex; }
+		.mansmtp-dash-bar span { height:100%; transition:width .4s; }
+		.mansmtp-dash-bar .bar-delivered { background:#1a7d2a; }
+		.mansmtp-dash-bar .bar-pending { background:#1967d2; }
+		.mansmtp-dash-bar .bar-failed { background:#b32d2e; }
+		.mansmtp-dash-bar .bar-bounced { background:#b45309; }
 
-		.sbwp-hourly { display:flex; align-items:end; gap:3px; height:40px; margin:12px 0 4px; }
-		.sbwp-hourly .sbwp-h-bar { flex:1; display:flex; flex-direction:column-reverse; min-height:4px; border-radius:2px 2px 0 0; overflow:hidden; background:#f0f0f1; position:relative; }
-		.sbwp-hourly .sbwp-h-bar .ok { background:#1a7d2a; width:100%; }
-		.sbwp-hourly .sbwp-h-bar .fail { background:#b32d2e; width:100%; }
+		.mansmtp-hourly { display:flex; align-items:end; gap:3px; height:40px; margin:12px 0 4px; }
+		.mansmtp-hourly .mansmtp-h-bar { flex:1; display:flex; flex-direction:column-reverse; min-height:4px; border-radius:2px 2px 0 0; overflow:hidden; background:#f0f0f1; position:relative; }
+		.mansmtp-hourly .mansmtp-h-bar .ok { background:#1a7d2a; width:100%; }
+		.mansmtp-hourly .mansmtp-h-bar .fail { background:#b32d2e; width:100%; }
 
-		.sbwp-health-row { display:flex; gap:24px; flex-wrap:wrap; }
-		.sbwp-health-item { flex:1; min-width:160px; }
-		.sbwp-health-item .sbwp-hl-label { font-size:11px; color:#787c82; text-transform:uppercase; letter-spacing:.5px; margin-bottom:2px; }
-		.sbwp-health-item .sbwp-hl-value { font-size:14px; font-weight:600; display:flex; align-items:center; gap:6px; }
-		.sbwp-health-item .sbwp-hl-value .dashicons { width:16px; height:16px; font-size:16px; }
-		.sbwp-health-item .sbwp-hl-value .green { color:#1a7d2a; }
-		.sbwp-health-item .sbwp-hl-value .red { color:#b32d2e; }
-		.sbwp-health-item .sbwp-hl-value .amber { color:#b45309; }
-		.sbwp-quota-bar { height:8px; border-radius:4px; background:#f0f0f1; margin:8px 0; overflow:hidden; }
-		.sbwp-quota-bar span { display:block; height:100%; border-radius:4px; background:#2563eb; transition:width .4s; }
-		.sbwp-quota-text { font-size:12px; color:#787c82; }
+		.mansmtp-health-row { display:flex; gap:24px; flex-wrap:wrap; }
+		.mansmtp-health-item { flex:1; min-width:160px; }
+		.mansmtp-health-item .mansmtp-hl-label { font-size:11px; color:#787c82; text-transform:uppercase; letter-spacing:.5px; margin-bottom:2px; }
+		.mansmtp-health-item .mansmtp-hl-value { font-size:14px; font-weight:600; display:flex; align-items:center; gap:6px; }
+		.mansmtp-health-item .mansmtp-hl-value .dashicons { width:16px; height:16px; font-size:16px; }
+		.mansmtp-health-item .mansmtp-hl-value .green { color:#1a7d2a; }
+		.mansmtp-health-item .mansmtp-hl-value .red { color:#b32d2e; }
+		.mansmtp-health-item .mansmtp-hl-value .amber { color:#b45309; }
+		.mansmtp-quota-bar { height:8px; border-radius:4px; background:#f0f0f1; margin:8px 0; overflow:hidden; }
+		.mansmtp-quota-bar span { display:block; height:100%; border-radius:4px; background:#2563eb; transition:width .4s; }
+		.mansmtp-quota-text { font-size:12px; color:#787c82; }
 
-		.sbwp-mini-table { width:100%; border-collapse:collapse; }
-		.sbwp-mini-table td { padding:8px 0; border-bottom:1px solid #f9fafb; font-size:13px; }
-		.sbwp-mini-table tr:last-child td { border-bottom:0; }
-		.sbwp-mini-table .sbwp-mt-status { font-size:11px; font-weight:600; }
-		.sbwp-mini-table .sbwp-mt-to { color:#50575e; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-		.sbwp-mini-table .sbwp-mt-subject { color:#787c82; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-		.sbwp-mini-table .sbwp-mt-date { color:#9ca3af; font-size:11px; white-space:nowrap; }
+		.mansmtp-mini-table { width:100%; border-collapse:collapse; }
+		.mansmtp-mini-table td { padding:8px 0; border-bottom:1px solid #f9fafb; font-size:13px; }
+		.mansmtp-mini-table tr:last-child td { border-bottom:0; }
+		.mansmtp-mini-table .mansmtp-mt-status { font-size:11px; font-weight:600; }
+		.mansmtp-mini-table .mansmtp-mt-to { color:#50575e; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+		.mansmtp-mini-table .mansmtp-mt-subject { color:#787c82; max-width:220px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+		.mansmtp-mini-table .mansmtp-mt-date { color:#9ca3af; font-size:11px; white-space:nowrap; }
 		';
 
 		wp_add_inline_style( 'common', $css );
@@ -161,7 +161,7 @@ class Admin {
 			)
 		);
 
-		add_settings_section( 'sbwp_main', '', '__return_empty_string', self::PAGE_SLUG );
+		add_settings_section( 'mansmtp_main', '', '__return_empty_string', self::PAGE_SLUG );
 
 		$fields = array(
 			'api_key'     => __( 'API Key', 'mansoor-smtp-for-sendbyte' ),
@@ -177,7 +177,7 @@ class Admin {
 				$label,
 				array( $this, 'render_field' ),
 				self::PAGE_SLUG,
-				'sbwp_main',
+				'mansmtp_main',
 				array( 'key' => $key )
 			);
 		}
@@ -196,7 +196,7 @@ class Admin {
 					esc_attr( $key ),
 					esc_attr( $value )
 				);
-				echo '<p class="sbwp-links"><a href="https://dashboard.sendbyte.africa" target="_blank">' . esc_html__( 'SendByte Dashboard', 'mansoor-smtp-for-sendbyte' ) . '</a> &middot; <a href="https://dashboard.sendbyte.africa/api-keys" target="_blank">' . esc_html__( 'Get API Key', 'mansoor-smtp-for-sendbyte' ) . '</a></p>';
+				echo '<p class="mansmtp-links"><a href="https://dashboard.sendbyte.africa" target="_blank">' . esc_html__( 'SendByte Dashboard', 'mansoor-smtp-for-sendbyte' ) . '</a> &middot; <a href="https://dashboard.sendbyte.africa/api-keys" target="_blank">' . esc_html__( 'Get API Key', 'mansoor-smtp-for-sendbyte' ) . '</a></p>';
 				break;
 
 			case 'from_email':
@@ -223,12 +223,12 @@ class Admin {
 			case 'sandbox':
 				$sandbox = ! empty( $options['sandbox'] );
 				?>
-				<div class="sbwp-mode-switch">
-					<label class="sbwp-toggle">
+				<div class="mansmtp-mode-switch">
+					<label class="mansmtp-toggle">
 						<input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[sandbox]" value="1" <?php checked( $sandbox ); ?> />
-						<span class="sbwp-slider"></span>
+						<span class="mansmtp-slider"></span>
 					</label>
-					<span class="sbwp-mode-badge <?php echo $sandbox ? 'sandbox' : 'live'; ?>">
+					<span class="mansmtp-mode-badge <?php echo $sandbox ? 'sandbox' : 'live'; ?>">
 						<span class="dashicons dashicons-<?php echo $sandbox ? 'hammer' : 'yes'; ?>"></span>
 						<?php echo $sandbox ? esc_html__( 'Sandbox', 'mansoor-smtp-for-sendbyte' ) : esc_html__( 'Live', 'mansoor-smtp-for-sendbyte' ); ?>
 					</span>
@@ -240,7 +240,7 @@ class Admin {
 			case 'log_enabled':
 				$on = ! empty( $options['log_enabled'] );
 				?>
-				<label class="sbwp-toggle-label">
+				<label class="mansmtp-toggle-label">
 					<input type="checkbox" name="<?php echo esc_attr( self::OPTION_KEY ); ?>[log_enabled]" value="1" <?php checked( $on ); ?> />
 					<span>
 					<?php
@@ -280,9 +280,9 @@ class Admin {
 
 		$saved = isset( $_GET['settings-updated'] ) && 'true' === sanitize_key( wp_unslash( $_GET['settings-updated'] ) );
 		?>
-		<div class="wrap sbwp-wrap">
+		<div class="wrap mansmtp-wrap">
 			<h1>
-				<img src="<?php echo esc_url( SBWP_URL . 'assets/logo.png' ); ?>" alt="SendByte" width="122" height="40" style="display:block" />
+				<img src="<?php echo esc_url( MANSMTP_URL . 'assets/logo.png' ); ?>" alt="SendByte" width="122" height="40" style="display:block" />
 				<?php echo esc_html__( 'Mansoor SMTP for SendByte', 'mansoor-smtp-for-sendbyte' ); ?>
 			</h1>
 
@@ -296,7 +296,7 @@ class Admin {
 			<?php $this->render_dashboard(); ?>
 
 			<form action="options.php" method="post">
-				<div class="sbwp-card">
+				<div class="mansmtp-card">
 					<h2><span class="dashicons dashicons-email"></span> <?php esc_html_e( 'SMTP Configuration', 'mansoor-smtp-for-sendbyte' ); ?></h2>
 					<?php
 					settings_fields( self::OPTION_KEY );
@@ -306,13 +306,13 @@ class Admin {
 				</div>
 			</form>
 
-			<div class="sbwp-card">
+			<div class="mansmtp-card">
 				<h2><span class="dashicons dashicons-mail"></span> <?php esc_html_e( 'Send Test Email', 'mansoor-smtp-for-sendbyte' ); ?></h2>
 				<?php $this->render_test_result(); ?>
 				<form action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" method="post">
 					<input type="hidden" name="action" value="sendbyte_test_email" />
-					<?php wp_nonce_field( 'sendbyte_test', '_sbwp_nonce' ); ?>
-					<div class="sbwp-test-row">
+					<?php wp_nonce_field( 'sendbyte_test', '_mansmtp_nonce' ); ?>
+					<div class="mansmtp-test-row">
 						<input type="email" name="test_to" id="test_to" class="regular-text" required placeholder="you@example.com" />
 						<?php submit_button( __( 'Send Test', 'mansoor-smtp-for-sendbyte' ), 'secondary', 'send_test', false ); ?>
 					</div>
@@ -320,11 +320,11 @@ class Admin {
 				</form>
 			</div>
 
-			<div class="sbwp-card">
+			<div class="mansmtp-card">
 				<h2>
 					<span class="dashicons dashicons-list-view"></span>
 					<?php esc_html_e( 'Email Log', 'mansoor-smtp-for-sendbyte' ); ?>
-					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=' . self::PAGE_SLUG ) ); ?>" class="sbwp-refresh dashicons dashicons-update" title="<?php esc_attr_e( 'Refresh', 'mansoor-smtp-for-sendbyte' ); ?>"></a>
+					<a href="<?php echo esc_url( admin_url( 'options-general.php?page=' . self::PAGE_SLUG ) ); ?>" class="mansmtp-refresh dashicons dashicons-update" title="<?php esc_attr_e( 'Refresh', 'mansoor-smtp-for-sendbyte' ); ?>"></a>
 				</h2>
 				<?php $this->render_logs(); ?>
 			</div>
@@ -368,37 +368,37 @@ class Admin {
 		$b_pct = $total_shown > 0 ? round( $bounced  / $total_shown * 100 ) : 0;
 		$f_pct = $total_shown > 0 ? round( $failed   / $total_shown * 100 ) : 0;
 		?>
-		<div class="sbwp-card">
+		<div class="mansmtp-card">
 			<h2>
 				<span class="dashicons dashicons-chart-area"></span>
 				<?php esc_html_e( 'Delivery Dashboard', 'mansoor-smtp-for-sendbyte' ); ?>
-				<span class="sbwp-head-right"><?php
+				<span class="mansmtp-head-right"><?php
 					/* translators: %d: number of recent emails fetched from the API */
 					echo esc_html( sprintf( __( 'Last %d emails', 'mansoor-smtp-for-sendbyte' ), $total ) );
 				?></span>
 			</h2>
 
-			<div class="sbwp-dash-grid">
-				<div class="sbwp-dash-stat delivered">
-					<div class="sbwp-stat-num"><?php echo esc_html( $delivered ); ?></div>
-					<div class="sbwp-stat-label"><?php esc_html_e( 'Delivered', 'mansoor-smtp-for-sendbyte' ); ?></div>
+			<div class="mansmtp-dash-grid">
+				<div class="mansmtp-dash-stat delivered">
+					<div class="mansmtp-stat-num"><?php echo esc_html( $delivered ); ?></div>
+					<div class="mansmtp-stat-label"><?php esc_html_e( 'Delivered', 'mansoor-smtp-for-sendbyte' ); ?></div>
 				</div>
-				<div class="sbwp-dash-stat pending">
-					<div class="sbwp-stat-num"><?php echo esc_html( $pending ); ?></div>
-					<div class="sbwp-stat-label"><?php esc_html_e( 'Pending', 'mansoor-smtp-for-sendbyte' ); ?></div>
+				<div class="mansmtp-dash-stat pending">
+					<div class="mansmtp-stat-num"><?php echo esc_html( $pending ); ?></div>
+					<div class="mansmtp-stat-label"><?php esc_html_e( 'Pending', 'mansoor-smtp-for-sendbyte' ); ?></div>
 				</div>
-				<div class="sbwp-dash-stat bounced">
-					<div class="sbwp-stat-num"><?php echo esc_html( $bounced ); ?></div>
-					<div class="sbwp-stat-label"><?php esc_html_e( 'Bounced', 'mansoor-smtp-for-sendbyte' ); ?></div>
+				<div class="mansmtp-dash-stat bounced">
+					<div class="mansmtp-stat-num"><?php echo esc_html( $bounced ); ?></div>
+					<div class="mansmtp-stat-label"><?php esc_html_e( 'Bounced', 'mansoor-smtp-for-sendbyte' ); ?></div>
 				</div>
-				<div class="sbwp-dash-stat failed">
-					<div class="sbwp-stat-num"><?php echo esc_html( $failed ); ?></div>
-					<div class="sbwp-stat-label"><?php esc_html_e( 'Failed', 'mansoor-smtp-for-sendbyte' ); ?></div>
+				<div class="mansmtp-dash-stat failed">
+					<div class="mansmtp-stat-num"><?php echo esc_html( $failed ); ?></div>
+					<div class="mansmtp-stat-label"><?php esc_html_e( 'Failed', 'mansoor-smtp-for-sendbyte' ); ?></div>
 				</div>
 			</div>
 
 			<?php if ( $total_shown > 0 ) : ?>
-			<div class="sbwp-dash-bar">
+			<div class="mansmtp-dash-bar">
 				<span class="bar-delivered" style="width:<?php echo esc_attr( $d_pct ); ?>%"></span>
 				<span class="bar-pending" style="width:<?php echo esc_attr( $p_pct ); ?>%"></span>
 				<span class="bar-bounced" style="width:<?php echo esc_attr( $b_pct ); ?>%"></span>
@@ -407,9 +407,9 @@ class Admin {
 			<?php endif; ?>
 
 			<?php if ( ! empty( $hourly ) ) : ?>
-			<div class="sbwp-hourly">
+			<div class="mansmtp-hourly">
 				<?php foreach ( $hourly as $hk => $hv ) : ?>
-					<div class="sbwp-h-bar" style="height:<?php echo esc_attr( max( 4, ( $hv['ok'] + $hv['fail'] ) / $max_h * 40 ) ); ?>px" title="<?php echo esc_attr( substr( $hk, 0, 10 ) . ' ' . substr( $hk, 11 ) . ':00' ); ?>">
+					<div class="mansmtp-h-bar" style="height:<?php echo esc_attr( max( 4, ( $hv['ok'] + $hv['fail'] ) / $max_h * 40 ) ); ?>px" title="<?php echo esc_attr( substr( $hk, 0, 10 ) . ' ' . substr( $hk, 11 ) . ':00' ); ?>">
 						<?php if ( $hv['fail'] > 0 ) : ?>
 							<div class="fail" style="flex:<?php echo esc_attr( $hv['fail'] ); ?>"></div>
 						<?php endif; ?>
@@ -424,7 +424,7 @@ class Admin {
 
 			<?php if ( ! empty( $recent ) ) : ?>
 			<h3 style="font-size:13px;font-weight:600;margin:16px 0 8px"><?php esc_html_e( 'Recent Activity', 'mansoor-smtp-for-sendbyte' ); ?></h3>
-			<table class="sbwp-mini-table">
+			<table class="mansmtp-mini-table">
 				<?php foreach ( $recent as $email ) :
 					$s = $email['status'] ?? 'sent';
 					$s_class = in_array( $s, array( 'delivered', 'failed', 'bounced', 'sent', 'queued' ), true ) ? $s : 'sent';
@@ -432,10 +432,10 @@ class Admin {
 					$date = isset( $email['created_at'] ) ? wp_date( 'M j, H:i', strtotime( $email['created_at'] ) ) : '';
 				?>
 				<tr>
-					<td><span class="sbwp-status-badge <?php echo esc_attr( $s_class ); ?>"><?php echo esc_html( ucfirst( $s ) ); ?></span></td>
-					<td class="sbwp-mt-to" title="<?php echo esc_attr( $to ); ?>"><?php echo esc_html( $to ); ?></td>
-					<td class="sbwp-mt-subject" title="<?php echo esc_attr( $email['subject'] ?? '' ); ?>"><?php echo esc_html( $email['subject'] ?? '' ); ?></td>
-					<td class="sbwp-mt-date"><?php echo esc_html( $date ); ?></td>
+					<td><span class="mansmtp-status-badge <?php echo esc_attr( $s_class ); ?>"><?php echo esc_html( ucfirst( $s ) ); ?></span></td>
+					<td class="mansmtp-mt-to" title="<?php echo esc_attr( $to ); ?>"><?php echo esc_html( $to ); ?></td>
+					<td class="mansmtp-mt-subject" title="<?php echo esc_attr( $email['subject'] ?? '' ); ?>"><?php echo esc_html( $email['subject'] ?? '' ); ?></td>
+					<td class="mansmtp-mt-date"><?php echo esc_html( $date ); ?></td>
 				</tr>
 				<?php endforeach; ?>
 			</table>
@@ -449,9 +449,9 @@ class Admin {
 		$has_key = ! empty( $options['api_key'] );
 
 		if ( ! $has_key ) {
-			echo '<div class="sbwp-card">';
+			echo '<div class="mansmtp-card">';
 			echo '<h2><span class="dashicons dashicons-shield"></span> ' . esc_html__( 'Connection Health', 'mansoor-smtp-for-sendbyte' ) . '</h2>';
-			echo '<p class="sbwp-empty-state">' . esc_html__( 'Add your API key above to check connection health.', 'mansoor-smtp-for-sendbyte' ) . '</p>';
+			echo '<p class="mansmtp-empty-state">' . esc_html__( 'Add your API key above to check connection health.', 'mansoor-smtp-for-sendbyte' ) . '</p>';
 			echo '</div>';
 			return;
 		}
@@ -460,7 +460,7 @@ class Admin {
 
 		if ( ! empty( $health['error'] ) && ! $health['valid'] ) {
 			printf(
-				'<div class="sbwp-card"><p class="sbwp-empty-state">%s %s</p></div>',
+				'<div class="mansmtp-card"><p class="mansmtp-empty-state">%s %s</p></div>',
 				esc_html__( 'Connection failed:', 'mansoor-smtp-for-sendbyte' ),
 				esc_html( $health['error'] )
 			);
@@ -469,37 +469,37 @@ class Admin {
 
 		$pct = $health['quota'] > 0 ? round( $health['used'] / $health['quota'] * 100 ) : 0;
 		?>
-		<div class="sbwp-card">
+		<div class="mansmtp-card">
 			<h2>
 				<span class="dashicons dashicons-shield"></span>
 				<?php esc_html_e( 'Connection Health', 'mansoor-smtp-for-sendbyte' ); ?>
-				<span class="sbwp-head-right">
-					<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=sbwp_refresh_health' ), 'sbwp_refresh_health' ) ); ?>" class="sbwp-refresh dashicons dashicons-update" title="<?php esc_attr_e( 'Refresh', 'mansoor-smtp-for-sendbyte' ); ?>"></a>
+				<span class="mansmtp-head-right">
+					<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=mansmtp_refresh_health' ), 'mansmtp_refresh_health' ) ); ?>" class="mansmtp-refresh dashicons dashicons-update" title="<?php esc_attr_e( 'Refresh', 'mansoor-smtp-for-sendbyte' ); ?>"></a>
 				</span>
 			</h2>
 
-			<div class="sbwp-health-row">
-				<div class="sbwp-health-item">
-					<div class="sbwp-hl-label"><?php esc_html_e( 'API Key', 'mansoor-smtp-for-sendbyte' ); ?></div>
-					<div class="sbwp-hl-value">
+			<div class="mansmtp-health-row">
+				<div class="mansmtp-health-item">
+					<div class="mansmtp-hl-label"><?php esc_html_e( 'API Key', 'mansoor-smtp-for-sendbyte' ); ?></div>
+					<div class="mansmtp-hl-value">
 						<span class="dashicons dashicons-yes-alt green"></span>
 						<?php esc_html_e( 'Connected', 'mansoor-smtp-for-sendbyte' ); ?>
 					</div>
 				</div>
-				<div class="sbwp-health-item">
-					<div class="sbwp-hl-label"><?php esc_html_e( 'Mode', 'mansoor-smtp-for-sendbyte' ); ?></div>
-					<div class="sbwp-hl-value">
+				<div class="mansmtp-health-item">
+					<div class="mansmtp-hl-label"><?php esc_html_e( 'Mode', 'mansoor-smtp-for-sendbyte' ); ?></div>
+					<div class="mansmtp-hl-value">
 						<span class="dashicons dashicons-<?php echo 'sandbox' === $health['mode'] ? 'hammer' : 'yes'; ?> <?php echo 'sandbox' === $health['mode'] ? 'amber' : 'green'; ?>"></span>
 						<?php echo 'sandbox' === $health['mode'] ? esc_html__( 'Sandbox', 'mansoor-smtp-for-sendbyte' ) : esc_html__( 'Live', 'mansoor-smtp-for-sendbyte' ); ?>
 					</div>
 				</div>
-				<div class="sbwp-health-item">
-					<div class="sbwp-hl-label"><?php esc_html_e( 'Plan', 'mansoor-smtp-for-sendbyte' ); ?></div>
-					<div class="sbwp-hl-value"><?php echo esc_html( $health['plan'] ?: '—' ); ?></div>
+				<div class="mansmtp-health-item">
+					<div class="mansmtp-hl-label"><?php esc_html_e( 'Plan', 'mansoor-smtp-for-sendbyte' ); ?></div>
+					<div class="mansmtp-hl-value"><?php echo esc_html( $health['plan'] ?: '—' ); ?></div>
 				</div>
-				<div class="sbwp-health-item">
-					<div class="sbwp-hl-label"><?php esc_html_e( 'Verified Domains', 'mansoor-smtp-for-sendbyte' ); ?></div>
-					<div class="sbwp-hl-value">
+				<div class="mansmtp-health-item">
+					<div class="mansmtp-hl-label"><?php esc_html_e( 'Verified Domains', 'mansoor-smtp-for-sendbyte' ); ?></div>
+					<div class="mansmtp-hl-value">
 						<?php
 						$verified = array();
 						foreach ( $health['domains'] as $d ) {
@@ -524,9 +524,9 @@ class Admin {
 
 			<?php if ( $health['quota'] > 0 ) : ?>
 			<div style="margin-top:16px">
-				<div class="sbwp-hl-label"><?php esc_html_e( 'Monthly Usage', 'mansoor-smtp-for-sendbyte' ); ?></div>
-				<div class="sbwp-quota-bar"><span style="width:<?php echo esc_attr( $pct ); ?>%"></span></div>
-				<div class="sbwp-quota-text">
+				<div class="mansmtp-hl-label"><?php esc_html_e( 'Monthly Usage', 'mansoor-smtp-for-sendbyte' ); ?></div>
+				<div class="mansmtp-quota-bar"><span style="width:<?php echo esc_attr( $pct ); ?>%"></span></div>
+				<div class="mansmtp-quota-text">
 					<?php
 					printf(
 						/* translators: 1: number used, 2: total quota */
@@ -575,17 +575,17 @@ class Admin {
 			? __( 'Almost there! Set your from address and send a test to start.', 'mansoor-smtp-for-sendbyte' )
 			: __( 'Add your API key to start sending emails from WordPress through SendByte.', 'mansoor-smtp-for-sendbyte' );
 		?>
-		<div class="sbwp-onboard">
-			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=sbwp_dismiss_onboard' ), 'sbwp_dismiss' ) ); ?>" class="sbwp-dismiss dashicons dashicons-no-alt" title="<?php esc_attr_e( 'Dismiss', 'mansoor-smtp-for-sendbyte' ); ?>"></a>
+		<div class="mansmtp-onboard">
+			<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=mansmtp_dismiss_onboard' ), 'mansmtp_dismiss' ) ); ?>" class="mansmtp-dismiss dashicons dashicons-no-alt" title="<?php esc_attr_e( 'Dismiss', 'mansoor-smtp-for-sendbyte' ); ?>"></a>
 			<h3><?php echo esc_html( $title ); ?></h3>
 			<p><?php echo esc_html( $desc ); ?></p>
-			<ul class="sbwp-steps">
+			<ul class="mansmtp-steps">
 				<?php foreach ( $steps as $step ) : ?>
 					<li>
-						<span class="sbwp-step-num<?php echo $step['done'] ? ' done' : ''; ?>">
+						<span class="mansmtp-step-num<?php echo $step['done'] ? ' done' : ''; ?>">
 							<?php echo $step['done'] ? '<span class="dashicons dashicons-yes" style="font-size:14px;width:14px;height:14px;"></span>' : '&nbsp;'; ?>
 						</span>
-						<span class="sbwp-step-label"><?php echo esc_html( $step['label'] ); ?></span>
+						<span class="mansmtp-step-label"><?php echo esc_html( $step['label'] ); ?></span>
 					</li>
 				<?php endforeach; ?>
 			</ul>
@@ -594,19 +594,19 @@ class Admin {
 	}
 
 	private function render_test_result(): void {
-		if ( ! isset( $_GET['sbwp_test'], $_GET['_wpnonce'] ) ) {
+		if ( ! isset( $_GET['mansmtp_test'], $_GET['_wpnonce'] ) ) {
 			return;
 		}
-		if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), 'sbwp_test_result' ) ) {
+		if ( ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), 'mansmtp_test_result' ) ) {
 			return;
 		}
 
-		$type = sanitize_key( wp_unslash( $_GET['sbwp_test'] ) );
+		$type = sanitize_key( wp_unslash( $_GET['mansmtp_test'] ) );
 
 		if ( 'success' === $type ) {
-			echo '<div class="sbwp-test-result success">' . esc_html__( 'Test email sent successfully! Check the recipient inbox.', 'mansoor-smtp-for-sendbyte' ) . '</div>';
+			echo '<div class="mansmtp-test-result success">' . esc_html__( 'Test email sent successfully! Check the recipient inbox.', 'mansoor-smtp-for-sendbyte' ) . '</div>';
 		} else {
-			echo '<div class="sbwp-test-result fail">' . esc_html__( 'Test email failed. Check your API key and domain settings.', 'mansoor-smtp-for-sendbyte' ) . '</div>';
+			echo '<div class="mansmtp-test-result fail">' . esc_html__( 'Test email failed. Check your API key and domain settings.', 'mansoor-smtp-for-sendbyte' ) . '</div>';
 		}
 	}
 
@@ -614,18 +614,18 @@ class Admin {
 		$options = get_option( self::OPTION_KEY, array() );
 
 		if ( empty( $options['log_enabled'] ) ) {
-			echo '<p class="sbwp-empty-state">' . esc_html__( 'Logging is disabled. Enable "Email Logging" above to start recording sent emails.', 'mansoor-smtp-for-sendbyte' ) . '</p>';
+			echo '<p class="mansmtp-empty-state">' . esc_html__( 'Logging is disabled. Enable "Email Logging" above to start recording sent emails.', 'mansoor-smtp-for-sendbyte' ) . '</p>';
 			return;
 		}
 
 		$logs = Logger::get_recent( 25 );
 
 		if ( empty( $logs ) ) {
-			echo '<p class="sbwp-empty-state">' . esc_html__( 'No emails logged yet. Send a test email above to see results here.', 'mansoor-smtp-for-sendbyte' ) . '</p>';
+			echo '<p class="mansmtp-empty-state">' . esc_html__( 'No emails logged yet. Send a test email above to see results here.', 'mansoor-smtp-for-sendbyte' ) . '</p>';
 			return;
 		}
 
-		echo '<table class="sbwp-log-table"><thead><tr>';
+		echo '<table class="mansmtp-log-table"><thead><tr>';
 		echo '<th>' . esc_html__( 'Date', 'mansoor-smtp-for-sendbyte' ) . '</th>';
 		echo '<th>' . esc_html__( 'To', 'mansoor-smtp-for-sendbyte' ) . '</th>';
 		echo '<th>' . esc_html__( 'Subject', 'mansoor-smtp-for-sendbyte' ) . '</th>';
@@ -651,10 +651,10 @@ class Admin {
 			$date = wp_date( get_option( 'date_format' ) . ' ' . get_option( 'time_format' ), strtotime( $log->created_at ) );
 
 			echo '<tr>';
-			echo '<td class="sbwp-date">' . esc_html( $date ) . '</td>';
-			echo '<td class="sbwp-to" title="' . esc_attr( $log->to_email ) . '">' . esc_html( $log->to_email ) . '</td>';
-			echo '<td class="sbwp-subj" title="' . esc_attr( $log->subject ) . '">' . esc_html( $log->subject ?: '—' ) . '</td>';
-			echo '<td><span class="sbwp-status-badge ' . esc_attr( $status_class ) . '">' . esc_html( $label ) . '</span></td>';
+			echo '<td class="mansmtp-date">' . esc_html( $date ) . '</td>';
+			echo '<td class="mansmtp-to" title="' . esc_attr( $log->to_email ) . '">' . esc_html( $log->to_email ) . '</td>';
+			echo '<td class="mansmtp-subj" title="' . esc_attr( $log->subject ) . '">' . esc_html( $log->subject ?: '—' ) . '</td>';
+			echo '<td><span class="mansmtp-status-badge ' . esc_attr( $status_class ) . '">' . esc_html( $label ) . '</span></td>';
 			echo '</tr>';
 		}
 
@@ -662,7 +662,7 @@ class Admin {
 	}
 
 	public function handle_test_email(): void {
-		if ( ! isset( $_POST['_sbwp_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['_sbwp_nonce'] ) ), 'sendbyte_test' ) || ! current_user_can( 'manage_options' ) ) {
+		if ( ! isset( $_POST['_mansmtp_nonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_POST['_mansmtp_nonce'] ) ), 'sendbyte_test' ) || ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'Unauthorized.', 'mansoor-smtp-for-sendbyte' ) );
 		}
 
@@ -689,8 +689,8 @@ class Admin {
 		wp_safe_redirect(
 			add_query_arg(
 				array(
-					'sbwp_test' => $sent ? 'success' : 'fail',
-					'_wpnonce'  => wp_create_nonce( 'sbwp_test_result' ),
+					'mansmtp_test' => $sent ? 'success' : 'fail',
+					'_wpnonce'  => wp_create_nonce( 'mansmtp_test_result' ),
 				),
 				admin_url( 'options-general.php?page=' . self::PAGE_SLUG )
 			)
@@ -699,7 +699,7 @@ class Admin {
 	}
 
 	public function dismiss_onboard(): void {
-		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), 'sbwp_dismiss' ) || ! current_user_can( 'manage_options' ) ) {
+		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), 'mansmtp_dismiss' ) || ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'Unauthorized.', 'mansoor-smtp-for-sendbyte' ) );
 		}
 
@@ -709,7 +709,7 @@ class Admin {
 	}
 
 	public function refresh_health(): void {
-		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), 'sbwp_refresh_health' ) || ! current_user_can( 'manage_options' ) ) {
+		if ( ! isset( $_GET['_wpnonce'] ) || ! wp_verify_nonce( sanitize_key( wp_unslash( $_GET['_wpnonce'] ) ), 'mansmtp_refresh_health' ) || ! current_user_can( 'manage_options' ) ) {
 			wp_die( esc_html__( 'Unauthorized.', 'mansoor-smtp-for-sendbyte' ) );
 		}
 

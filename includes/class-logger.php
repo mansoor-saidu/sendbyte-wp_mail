@@ -1,11 +1,11 @@
 <?php
-namespace SBWP;
+namespace MANSMTP;
 
 defined( 'ABSPATH' ) || exit;
 
 class Logger {
 
-	private const TABLE = 'sendbyte_wp_log';
+	private const TABLE = 'mansmtp_log';
 
 	public static function install(): void {
 		global $wpdb;

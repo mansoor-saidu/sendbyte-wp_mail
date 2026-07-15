@@ -1,5 +1,5 @@
 <?php
-namespace SBWP;
+namespace MANSMTP;
 
 defined( 'ABSPATH' ) || exit;
 
@@ -9,7 +9,7 @@ class Smtp {
 	private static ?int $last_log_id = null;
 
 	public function __construct() {
-		$this->settings = get_option( 'sendbyte_wp_settings', array() );
+		$this->settings = get_option( 'mansmtp_settings', array() );
 
 		add_action( 'phpmailer_init',  array( $this, 'configure' ) );
 		add_filter( 'wp_mail_from',    array( $this, 'set_from_email' ) );
@@ -42,7 +42,7 @@ class Smtp {
 				'allow_self_signed' => false,
 			),
 		);
-		$phpmailer->XMailer    = 'SMTP for SendByte ' . SBWP_VERSION;
+		$phpmailer->XMailer    = 'SMTP for SendByte ' . MANSMTP_VERSION;
 		$phpmailer->Timeout    = 30;
 	}
 
@@ -67,7 +67,7 @@ class Smtp {
 
 		global $wpdb;
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sendbyte_wp_log',
+			$wpdb->prefix . 'mansmtp_log',
 			array(
 				'status'   => 'failed',
 				'response' => $error->get_error_message(),
@@ -87,7 +87,7 @@ class Smtp {
 
 		global $wpdb;
 		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery
-			$wpdb->prefix . 'sendbyte_wp_log',
+			$wpdb->prefix . 'mansmtp_log',
 			array( 'status' => 'delivered' ),
 			array( 'id' => self::$last_log_id ),
 			array( '%s' ),

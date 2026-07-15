@@ -17,14 +17,14 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'SBWP_VERSION', '1.1.3' );
-define( 'SBWP_FILE',    __FILE__ );
-define( 'SBWP_PATH',    plugin_dir_path( __FILE__ ) );
-define( 'SBWP_URL',     plugin_dir_url( __FILE__ ) );
+define( 'MANSMTP_VERSION', '1.1.3' );
+define( 'MANSMTP_FILE',    __FILE__ );
+define( 'MANSMTP_PATH',    plugin_dir_path( __FILE__ ) );
+define( 'MANSMTP_URL',     plugin_dir_url( __FILE__ ) );
 
 spl_autoload_register( function ( $class ) {
-	$prefix = 'SBWP\\';
-	$base   = SBWP_PATH . 'includes/';
+	$prefix = 'MANSMTP\\';
+	$base   = MANSMTP_PATH . 'includes/';
 
 	if ( strncmp( $prefix, $class, strlen( $prefix ) ) !== 0 ) {
 		return;
@@ -38,31 +38,31 @@ spl_autoload_register( function ( $class ) {
 	}
 } );
 
-register_activation_hook( __FILE__, 'sbwp_activate' );
-function sbwp_activate() {
-	SBWP\Logger::install();
-	set_transient( 'sbwp_activation_notice', true, 86400 );
+register_activation_hook( __FILE__, 'mansmtp_activate' );
+function mansmtp_activate() {
+	MANSMTP\Logger::install();
+	set_transient( 'mansmtp_activation_notice', true, 86400 );
 }
 
-add_action( 'plugins_loaded', 'sbwp_init' );
-function sbwp_init() {
-	new SBWP\Admin();
-	new SBWP\Smtp();
+add_action( 'plugins_loaded', 'mansmtp_init' );
+function mansmtp_init() {
+	new MANSMTP\Admin();
+	new MANSMTP\Smtp();
 }
 
-add_action( 'admin_notices', 'sbwp_activation_notice' );
-function sbwp_activation_notice() {
+add_action( 'admin_notices', 'mansmtp_activation_notice' );
+function mansmtp_activation_notice() {
 	if ( ! current_user_can( 'manage_options' ) ) {
 		return;
 	}
 
-	$options = get_option( 'sendbyte_wp_settings', array() );
+	$options = get_option( 'mansmtp_settings', array() );
 	if ( ! empty( $options['api_key'] ) ) {
-		delete_transient( 'sbwp_activation_notice' );
+		delete_transient( 'mansmtp_activation_notice' );
 		return;
 	}
 
-	if ( ! get_transient( 'sbwp_activation_notice' ) ) {
+	if ( ! get_transient( 'mansmtp_activation_notice' ) ) {
 		return;
 	}
 
@@ -80,8 +80,8 @@ function sbwp_activation_notice() {
 	<?php
 }
 
-add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'sbwp_action_links' );
-function sbwp_action_links( $links ) {
+add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ), 'mansmtp_action_links' );
+function mansmtp_action_links( $links ) {
 	$url = admin_url( 'options-general.php?page=mansoor-smtp-for-sendbyte' );
 	array_unshift(
 		$links,
